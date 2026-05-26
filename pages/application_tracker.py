@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pandas as pd
 import streamlit as st
 
 from agents.tracker_agent import add_application, delete_application, list_applications, update_application
@@ -48,7 +47,7 @@ def render() -> None:
     rows = list_applications(profile["id"])
     st.subheader("Saved Applications")
     if rows:
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        st.dataframe(rows, use_container_width=True, hide_index=True)
         selected_id = st.selectbox("Select application to edit/delete", [row["id"] for row in rows], format_func=lambda app_id: _label_for(rows, app_id))
         selected = next(row for row in rows if row["id"] == selected_id)
         with st.form("edit_application"):

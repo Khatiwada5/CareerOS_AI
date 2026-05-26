@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pandas as pd
 import streamlit as st
 
 from agents.profile_agent import get_current_profile, upsert_profile
@@ -64,6 +63,19 @@ def render() -> None:
 
     st.subheader("Upcoming Follow-ups")
     if followups:
-        st.dataframe(pd.DataFrame(followups)[["company", "role", "status", "follow_up_date", "notes"]], use_container_width=True, hide_index=True)
+        st.dataframe(
+            [
+                {
+                    "company": app.get("company"),
+                    "role": app.get("role"),
+                    "status": app.get("status"),
+                    "follow_up_date": app.get("follow_up_date"),
+                    "notes": app.get("notes"),
+                }
+                for app in followups
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
     else:
         st.info("No follow-up reminders saved yet.")

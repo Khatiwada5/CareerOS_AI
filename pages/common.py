@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pandas as pd
 import streamlit as st
 
 from agents.profile_agent import get_current_profile
@@ -46,6 +45,6 @@ def show_markdown_result(text: str) -> None:
 
 def dataframe_or_empty(rows: list[dict], message: str) -> None:
     if rows:
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        st.dataframe(rows, use_container_width=True, hide_index=True)
     else:
         st.info(message)

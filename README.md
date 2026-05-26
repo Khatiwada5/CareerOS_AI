@@ -13,6 +13,8 @@ Deploy-ready for Streamlit Community Cloud.
 
 To publish the live demo, connect this GitHub repository in [Streamlit Community Cloud](https://streamlit.io/cloud), choose `app.py` as the main file, and add optional secrets for `OPENAI_API_KEY`, `GEMINI_API_KEY`, and `LLM_PROVIDER`.
 
+In Streamlit's **Advanced settings**, choose Python `3.11` or `3.12` for the most reliable dependency install.
+
 ## Features
 
 - Home dashboard with profile setup, application counts, average fit score, recent analyses, and follow-up reminders
@@ -67,6 +69,12 @@ streamlit run app.py
 ```
 
 The app works without an API key by using deterministic mock LLM responses.
+
+For the full local developer stack, including FastAPI, LangGraph, and pinned package versions:
+
+```bash
+pip install -r requirements-full.txt
+```
 
 To run the optional FastAPI backend:
 
