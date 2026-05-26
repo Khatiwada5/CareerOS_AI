@@ -4,7 +4,7 @@ import streamlit as st
 
 from agents.profile_agent import get_current_profile, upsert_profile
 from agents.tracker_agent import list_applications
-from backend.database import fetch_all
+from backend.database import clear_all_data, fetch_all
 from pages.common import dataframe_or_empty, metric_card, page_title
 
 
@@ -24,6 +24,14 @@ def render() -> None:
         metric_card("Average Fit Score", f"{avg_score}/100")
     with col3:
         metric_card("Upcoming Follow-ups", str(len(followups)))
+
+    with st.expander("Data Controls"):
+        st.caption("Use this when you want to restart the demo with a blank profile, no saved resumes, no job analyses, and no applications.")
+        confirm_clear = st.checkbox("I understand this will clear all saved app data")
+        if st.button("Clear Form and Saved Data", disabled=not confirm_clear):
+            clear_all_data()
+            st.success("All saved data cleared. The form is ready for a fresh start.")
+            st.rerun()
 
     st.subheader("Profile Setup")
     st.info("After saving your profile, go to Resume Vault to upload your PDF or DOCX resume once. The other tools will use your latest saved resume automatically.")

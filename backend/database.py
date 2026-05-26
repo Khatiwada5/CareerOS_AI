@@ -107,3 +107,11 @@ def execute(query: str, params: Iterable[Any] = ()) -> int:
     with get_connection() as conn:
         cursor = conn.execute(query, tuple(params))
         return int(cursor.lastrowid)
+
+
+def clear_all_data() -> None:
+    with get_connection() as conn:
+        conn.execute("DELETE FROM job_analysis")
+        conn.execute("DELETE FROM applications")
+        conn.execute("DELETE FROM resumes")
+        conn.execute("DELETE FROM users")
