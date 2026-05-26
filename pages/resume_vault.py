@@ -4,7 +4,7 @@ import streamlit as st
 
 from agents.resume_agent import get_latest_resume, list_resumes, save_resume
 from backend.resume_parser import extract_text_from_upload
-from pages.common import dataframe_or_empty, page_title, require_profile
+from pages.common import dataframe_or_empty, page_title, render_card, render_score_bar, render_section_header, require_profile
 
 
 def render() -> None:
@@ -15,12 +15,14 @@ def render() -> None:
 
     latest = get_latest_resume(profile["id"])
     if latest:
-        st.success(f"Latest saved resume: {latest['file_name']} ({latest['created_at']})")
+        render_card("Latest Saved Resume", f"{latest['file_name']}\nSaved: {latest['created_at']}", "green")
+        render_score_bar("Resume Vault Score", latest.get("resume_score", 0), "Estimated from resume sections, skills, and measurable detail.")
         with st.expander("Preview extracted resume text"):
             st.text_area("Extracted text", value=latest.get("extracted_text", ""), height=220, disabled=True)
     else:
-        st.info("No saved resume yet. Upload one below so the career tools can use it.")
+        render_card("No Resume Saved Yet", "Upload one below so Job Fit Scorer, Resume Tailor, Cover Letter, Interview Prep, and Skill Gap Planner can use it.", "yellow")
 
+    render_section_header("Upload Resume", "PDF, DOCX, and TXT files are supported.")
     uploaded = st.file_uploader("Upload your resume", type=["pdf", "docx", "txt"])
     if uploaded and st.button("Save Resume", type="primary"):
         try:
@@ -31,6 +33,6 @@ def render() -> None:
         except Exception as exc:
             st.error(f"Could not save resume: {exc}")
 
-    st.subheader("Saved Resumes")
+    render_section_header("Saved Resumes")
     rows = [row for row in list_resumes() if row.get("user_id") == profile["id"]]
     dataframe_or_empty(rows, "No resumes saved yet.")

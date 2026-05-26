@@ -3,7 +3,7 @@ from __future__ import annotations
 import streamlit as st
 
 from agents.graph import run_career_graph
-from pages.common import page_title, require_profile, show_markdown_result
+from pages.common import page_title, render_badge, render_card, render_score_bar, render_section_header, render_skill_chips, require_profile, split_ai_sections
 
 
 def render() -> None:
@@ -21,5 +21,13 @@ def render() -> None:
             }
         )
         if result["missing_skills"]:
-            st.write("Missing skills detected:", ", ".join(result["missing_skills"]))
-        show_markdown_result(result["plan"])
+            render_section_header("Missing Skills", "Prioritize the highest-signal skills first.")
+            render_skill_chips(result["missing_skills"], "yellow")
+            for skill in result["missing_skills"][:5]:
+                render_badge(f"{skill}: High priority", "red")
+        risk = min(100, max(20, len(result["missing_skills"]) * 14))
+        render_score_bar("Skill Gap Risk", risk, "Based on detected missing skills from the target role.")
+        render_section_header("30-Day Skill Plan", "A practical path to close gaps and prove progress.")
+        for title, body in split_ai_sections(result["plan"]):
+            tone = "purple" if "project" in title.lower() else "blue"
+            render_card(title, body, tone)

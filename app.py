@@ -37,44 +37,146 @@ def inject_styles() -> None:
         """
         <style>
         :root {
-          --primary: #2563eb;
-          --ink: #172033;
-          --muted: #667085;
-          --panel: #ffffff;
-          --line: #e6e8ee;
+          --bg: #0B1020;
+          --card: #111827;
+          --card-2: #1F2937;
+          --blue: #3B82F6;
+          --purple: #8B5CF6;
+          --green: #22C55E;
+          --yellow: #FACC15;
+          --red: #EF4444;
+          --text: #F9FAFB;
+          --muted: #9CA3AF;
+          --line: rgba(148, 163, 184, .22);
         }
-        .main .block-container { padding-top: 1.6rem; max-width: 1180px; }
-        h1, h2, h3 { color: var(--ink); letter-spacing: 0; }
+        .stApp {
+          background:
+            radial-gradient(circle at top left, rgba(59, 130, 246, .22), transparent 28rem),
+            radial-gradient(circle at top right, rgba(139, 92, 246, .18), transparent 26rem),
+            var(--bg);
+          color: var(--text);
+        }
+        .main .block-container { padding-top: 1.4rem; max-width: 1220px; padding-bottom: 3rem; }
+        h1, h2, h3, h4, p, label, span { letter-spacing: 0; }
+        h1, h2, h3 { color: var(--text); }
+        p, .stCaption, [data-testid="stMarkdownContainer"] { color: var(--muted); }
+        .page-hero {
+          border: 1px solid var(--line);
+          border-radius: 22px;
+          padding: 30px;
+          margin-bottom: 24px;
+          background: linear-gradient(135deg, rgba(59, 130, 246, .28), rgba(139, 92, 246, .22) 50%, rgba(17, 24, 39, .92));
+          box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+        }
+        .page-hero .eyebrow {
+          color: #BFDBFE;
+          font-size: .78rem;
+          text-transform: uppercase;
+          font-weight: 800;
+          letter-spacing: .1em;
+          margin-bottom: 8px;
+        }
+        .page-hero h1 { font-size: 2.75rem; line-height: 1.05; margin: 0 0 10px; }
+        .page-hero p { font-size: 1.05rem; margin: 0; color: #D1D5DB; max-width: 820px; }
+        .section-heading { margin: 26px 0 12px; }
+        .section-heading h2 { font-size: 1.15rem; margin-bottom: 2px; }
+        .section-heading p { margin: 0; }
         .metric-card {
-          background: var(--panel);
+          background: linear-gradient(180deg, rgba(31, 41, 55, .9), rgba(17, 24, 39, .95));
           border: 1px solid var(--line);
-          border-radius: 8px;
+          border-radius: 18px;
           padding: 18px;
-          min-height: 112px;
-          box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+          min-height: 124px;
+          box-shadow: 0 16px 42px rgba(0, 0, 0, .2);
+          position: relative;
+          overflow: hidden;
         }
-        .metric-card .label { color: var(--muted); font-size: .86rem; }
-        .metric-card .value { color: var(--ink); font-size: 1.9rem; font-weight: 700; margin-top: 6px; }
-        .section-panel {
-          background: #fff;
+        .metric-card:before {
+          content: "";
+          position: absolute;
+          inset: 0 auto 0 0;
+          width: 4px;
+          background: linear-gradient(var(--blue), var(--purple));
+        }
+        .metric-green:before { background: var(--green); }
+        .metric-yellow:before { background: var(--yellow); }
+        .metric-red:before { background: var(--red); }
+        .metric-card .label { color: var(--muted); font-size: .82rem; font-weight: 700; text-transform: uppercase; }
+        .metric-card .value { color: var(--text); font-size: 2rem; font-weight: 800; margin-top: 8px; }
+        .metric-card .helper { color: var(--muted); font-size: .85rem; margin-top: 8px; }
+        .cos-card, .section-panel, .score-card {
+          background: rgba(17, 24, 39, .86);
           border: 1px solid var(--line);
-          border-radius: 8px;
-          padding: 18px;
-          margin-bottom: 14px;
+          border-radius: 18px;
+          padding: 18px 20px;
+          margin-bottom: 16px;
+          box-shadow: 0 18px 48px rgba(0, 0, 0, .18);
         }
-        .score-pill {
-          display: inline-block;
-          padding: 5px 10px;
+        .cos-card h3 { font-size: 1rem; margin: 0 0 10px; }
+        .cos-card .card-body { color: #D1D5DB; line-height: 1.6; }
+        .cos-card ul { margin: 0; padding-left: 1.1rem; }
+        .badge, .skill-chip {
+          display: inline-flex;
+          align-items: center;
           border-radius: 999px;
-          background: #eef4ff;
-          color: #174ea6;
-          font-weight: 700;
+          padding: 6px 11px;
+          font-size: .78rem;
+          font-weight: 800;
+          margin: 4px 6px 4px 0;
+          border: 1px solid transparent;
         }
-        div[data-testid="stSidebar"] { background: #f8fafc; }
+        .badge-blue, .chip-blue { background: rgba(59, 130, 246, .16); color: #BFDBFE; border-color: rgba(59, 130, 246, .35); }
+        .badge-purple, .chip-purple { background: rgba(139, 92, 246, .17); color: #DDD6FE; border-color: rgba(139, 92, 246, .38); }
+        .badge-green, .chip-green { background: rgba(34, 197, 94, .14); color: #BBF7D0; border-color: rgba(34, 197, 94, .35); }
+        .badge-yellow, .chip-yellow { background: rgba(250, 204, 21, .14); color: #FEF08A; border-color: rgba(250, 204, 21, .38); }
+        .badge-red, .chip-red { background: rgba(239, 68, 68, .15); color: #FECACA; border-color: rgba(239, 68, 68, .38); }
+        .chip-wrap { margin: 8px 0 14px; }
+        .score-top { display: flex; justify-content: space-between; align-items: center; color: var(--text); margin-bottom: 10px; }
+        .score-top strong { font-size: 1.7rem; }
+        .score-track { height: 12px; background: #273244; border-radius: 999px; overflow: hidden; }
+        .score-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--blue), var(--purple)); }
+        .score-card p { margin: 10px 0 0; }
+        .warning-card {
+          background: rgba(239, 68, 68, .12);
+          border: 1px solid rgba(239, 68, 68, .34);
+          border-radius: 16px;
+          padding: 16px 18px;
+          margin: 14px 0;
+        }
+        .warning-card strong { color: #FECACA; }
+        .warning-card p { margin: 8px 0 0; color: #FCA5A5; }
+        div[data-testid="stSidebar"] {
+          background: linear-gradient(180deg, #111827, #0B1020);
+          border-right: 1px solid var(--line);
+        }
+        div[data-testid="stSidebar"] h1, div[data-testid="stSidebar"] p, div[data-testid="stSidebar"] span, div[data-testid="stSidebar"] label {
+          color: var(--text);
+        }
+        div[data-testid="stSidebar"] .stRadio > div {
+          gap: 7px;
+        }
+        div[data-testid="stSidebar"] [role="radiogroup"] label {
+          background: rgba(31, 41, 55, .65);
+          border: 1px solid rgba(148, 163, 184, .16);
+          border-radius: 12px;
+          padding: 8px 10px;
+        }
+        .stTextInput input, .stTextArea textarea, .stSelectbox div[data-baseweb="select"] > div {
+          background: #111827;
+          border-color: rgba(148, 163, 184, .28);
+          color: var(--text);
+        }
         div.stButton > button {
-          border-radius: 7px;
-          border: 1px solid #cbd5e1;
+          border-radius: 12px;
+          border: 1px solid rgba(59, 130, 246, .45);
           font-weight: 600;
+          background: linear-gradient(135deg, var(--blue), var(--purple));
+          color: white;
+        }
+        .stDataFrame {
+          border: 1px solid var(--line);
+          border-radius: 16px;
+          overflow: hidden;
         }
         </style>
         """,
@@ -86,9 +188,9 @@ inject_styles()
 
 with st.sidebar:
     st.title("CareerOS AI")
-    st.caption("Career command center")
+    st.caption("AI career command center")
     selected_page = st.radio("Navigate", list(PAGES.keys()), label_visibility="collapsed")
     st.divider()
-    st.caption("MVP mode: real LLM if an API key exists, otherwise mock career outputs.")
+    st.caption("Profile -> Resume Vault -> analyze, tailor, prep, and track.")
 
 PAGES[selected_page]()
