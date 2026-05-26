@@ -5,16 +5,8 @@ from backend.llm_client import LLMClient
 from backend.utils import estimate_resume_score, extract_skills, top_keywords
 
 
-def analyze_resume(user_id: int, file_name: str, extracted_text: str) -> dict:
+def save_resume(user_id: int, file_name: str, extracted_text: str) -> dict:
     score = estimate_resume_score(extracted_text)
-    feedback = LLMClient().generate(
-        "resume_analysis",
-        {
-            "resume_text": extracted_text[:6000],
-            "skills_found": extract_skills(extracted_text),
-            "keywords": top_keywords(extracted_text),
-        },
-    )
     resume_id = execute(
         "INSERT INTO resumes (user_id, file_name, extracted_text, resume_score) VALUES (?, ?, ?, ?)",
         (user_id, file_name, extracted_text, score),
@@ -24,6 +16,21 @@ def analyze_resume(user_id: int, file_name: str, extracted_text: str) -> dict:
         "resume_score": score,
         "skills": extract_skills(extracted_text),
         "keywords": top_keywords(extracted_text),
+    }
+
+
+def analyze_resume(user_id: int, file_name: str, extracted_text: str) -> dict:
+    saved = save_resume(user_id, file_name, extracted_text)
+    feedback = LLMClient().generate(
+        "resume_analysis",
+        {
+            "resume_text": extracted_text[:6000],
+            "skills_found": extract_skills(extracted_text),
+            "keywords": top_keywords(extracted_text),
+        },
+    )
+    return {
+        **saved,
         "feedback": feedback,
     }
 

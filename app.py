@@ -9,6 +9,7 @@ from pages import (
     home,
     interview_prep,
     job_fit_scorer,
+    resume_vault,
     resume_analyzer,
     resume_tailor,
     skill_gap,
@@ -20,6 +21,7 @@ init_db()
 
 PAGES = {
     "Home Dashboard": home.render,
+    "Resume Vault": resume_vault.render,
     "Resume Analyzer": resume_analyzer.render,
     "Job Fit Scorer": job_fit_scorer.render,
     "Resume Tailor": resume_tailor.render,

@@ -26,6 +26,7 @@ def render() -> None:
         metric_card("Upcoming Follow-ups", str(len(followups)))
 
     st.subheader("Profile Setup")
+    st.info("After saving your profile, go to Resume Vault to upload your PDF or DOCX resume once. The other tools will use your latest saved resume automatically.")
     with st.form("profile_form"):
         c1, c2 = st.columns(2)
         with c1:

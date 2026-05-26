@@ -18,6 +18,7 @@ In Streamlit's **Advanced settings**, choose Python `3.11` or `3.12` for the mos
 ## Features
 
 - Home dashboard with profile setup, application counts, average fit score, recent analyses, and follow-up reminders
+- Resume Vault for saving an existing PDF, DOCX, or TXT resume
 - Resume Analyzer for PDF, DOCX, and TXT uploads
 - Job Fit Scorer using the requested 100-point scoring formula
 - Resume Tailor that improves bullets without inventing experience
