@@ -1,0 +1,21 @@
+Alex Johnson
+Computer Science Student, State University
+
+EDUCATION
+State University, B.S. Computer Science, Expected 2026
+
+SKILLS
+Python, SQL, Pandas, Excel, Git, FastAPI, Streamlit, Data Analysis, Communication
+
+EXPERIENCE
+Student Technology Assistant
+- Supported students and faculty with software setup, troubleshooting, and documentation.
+- Created a simple spreadsheet tracker to organize recurring support requests.
+
+PROJECTS
+Career Dashboard
+- Built a Streamlit dashboard that tracks job applications, follow-ups, and interview preparation notes.
+- Used Python and Pandas to summarize application status and identify overdue follow-ups.
+
+CAREER GOAL
+Seeking a data analyst, business analyst, or software internship where I can build useful tools and learn from experienced teams.

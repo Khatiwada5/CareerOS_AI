@@ -1,0 +1,15 @@
+Data Analyst Intern - Northstar Analytics
+
+Northstar Analytics is seeking a Data Analyst Intern to help clean, analyze, and visualize customer and product data. The intern will work with business stakeholders to understand questions, write SQL queries, build Python/Pandas analyses, and create dashboards for weekly reporting.
+
+Responsibilities:
+- Clean and analyze datasets using SQL, Python, and Excel.
+- Build dashboards and summaries for product and operations teams.
+- Communicate findings clearly to technical and non-technical stakeholders.
+- Document assumptions, methods, and recommendations.
+
+Qualifications:
+- Current college student or recent graduate in computer science, business analytics, statistics, economics, or related field.
+- Experience with SQL, Python, Pandas, Excel, Tableau or Power BI.
+- Strong communication, curiosity, and attention to detail.
+- Must be authorized to work in the United States. Sponsorship is not available for this internship.
