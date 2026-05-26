@@ -6,6 +6,7 @@ CareerOS AI is an AI career command center for students, recent graduates, and e
 
 Deploy-ready for Streamlit Community Cloud.
 
+- One-click deploy: [Deploy CareerOS AI to Streamlit](https://share.streamlit.io/deploy?repository=https://github.com/Khatiwada5/CareerOS_AI&branch=main&mainModule=app.py)
 - App entry point: `app.py`
 - Repository: `https://github.com/Khatiwada5/CareerOS_AI`
 - Suggested live URL after deployment: `https://careeros-ai.streamlit.app`
