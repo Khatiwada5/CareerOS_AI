@@ -16,15 +16,16 @@ def render() -> None:
     uploaded = st.file_uploader("Upload resume", type=["pdf", "docx", "txt"])
     if uploaded and st.button("Analyze Resume", type="primary"):
         try:
-            text = extract_text_from_upload(uploaded)
-            result = run_career_graph(
-                {
-                    "intent": "resume_analysis",
-                    "profile": profile,
-                    "file_name": uploaded.name,
-                    "resume_text": text,
-                }
-            )
+            with st.spinner("Analyzing resume with CareerOS AI..."):
+                text = extract_text_from_upload(uploaded)
+                result = run_career_graph(
+                    {
+                        "intent": "resume_analysis",
+                        "profile": profile,
+                        "file_name": uploaded.name,
+                        "resume_text": text,
+                    }
+                )
             render_score_bar("Resume Score", result["resume_score"], "A quick ATS and content-readiness estimate.")
             render_section_header("Detected Skills", "Skills found in the uploaded resume.")
             render_skill_chips(result["skills"], "green", "No obvious skills detected yet.")

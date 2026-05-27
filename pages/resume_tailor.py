@@ -14,14 +14,18 @@ def render() -> None:
     job_description = st.text_area("Job description", height=260)
     resume_text = st.text_area("Resume text override", value=latest_resume_text(profile["id"]), height=180)
     if st.button("Generate Tailored Bullets", type="primary"):
-        result = run_career_graph(
-            {
-                "intent": "resume_tailor",
-                "profile": profile,
-                "resume_text": resume_text,
-                "job_description": job_description,
-            }
-        )
+        if not job_description.strip():
+            st.error("Paste a job description first.")
+            return
+        with st.spinner("Tailoring bullets without inventing experience..."):
+            result = run_career_graph(
+                {
+                    "intent": "resume_tailor",
+                    "profile": profile,
+                    "resume_text": resume_text,
+                    "job_description": job_description,
+                }
+            )
         render_section_header("Tailored Bullet Suggestions", "Use these as polished drafts, then edit them to match your real experience.")
         bullets = [line.strip("- ").strip() for line in result.splitlines() if line.strip().startswith("-")]
         if not bullets:

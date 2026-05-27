@@ -5,7 +5,11 @@ from html import escape
 import streamlit as st
 
 from agents.profile_agent import get_current_profile
-from agents.resume_agent import get_latest_resume
+from agents.resume_agent import get_active_resume
+
+
+def current_user_id() -> int | None:
+    return st.session_state.get("user_id")
 
 
 def page_title(title: str, caption: str = "") -> None:
@@ -152,7 +156,8 @@ def split_ai_sections(text: str) -> list[tuple[str, str]]:
 
 
 def require_profile() -> dict | None:
-    profile = get_current_profile()
+    user_id = current_user_id()
+    profile = get_current_profile(user_id)
     if not profile:
         render_warning_card("Profile needed", "Create your profile on the Home Dashboard first.")
         return None
@@ -160,7 +165,10 @@ def require_profile() -> dict | None:
 
 
 def latest_resume_text(user_id: int | None = None) -> str:
-    resume = get_latest_resume(user_id)
+    resolved_user_id = user_id or current_user_id()
+    if not resolved_user_id:
+        return ""
+    resume = get_active_resume(resolved_user_id)
     return resume.get("extracted_text", "") if resume else ""
 
 

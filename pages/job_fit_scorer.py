@@ -33,16 +33,20 @@ def render() -> None:
     st.caption("Uses your saved profile and latest analyzed resume when available.")
 
     if st.button("Analyze Fit", type="primary"):
-        result = run_career_graph(
-            {
-                "intent": "job_fit",
-                "profile": profile,
-                "company": company,
-                "role": role,
-                "job_description": job_description,
-                "resume_text": resume_text,
-            }
-        )
+        if not job_description.strip():
+            st.error("Paste a job description first.")
+            return
+        with st.spinner("Scoring fit against your active resume and profile..."):
+            result = run_career_graph(
+                {
+                    "intent": "job_fit",
+                    "profile": profile,
+                    "company": company,
+                    "role": role,
+                    "job_description": job_description,
+                    "resume_text": resume_text,
+                }
+            )
         render_score_bar("Job Fit Score", result["fit_score"], "Weighted across skills, experience, education, projects, and keywords.")
         render_badge(result["recommendation"], recommendation_tone(result["recommendation"]))
         render_section_header("Score Breakdown")

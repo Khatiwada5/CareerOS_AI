@@ -3,7 +3,10 @@ from __future__ import annotations
 from io import BytesIO
 
 from docx import Document
-from pypdf import PdfReader
+try:
+    from PyPDF2 import PdfReader
+except ModuleNotFoundError:
+    from pypdf import PdfReader
 
 
 def extract_text_from_upload(uploaded_file) -> str:

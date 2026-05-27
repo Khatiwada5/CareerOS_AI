@@ -13,13 +13,17 @@ def render() -> None:
         return
     job_description = st.text_area("Target role or job description", height=280)
     if st.button("Create Skill Plan", type="primary"):
-        result = run_career_graph(
-            {
-                "intent": "skill_gap",
-                "profile": profile,
-                "job_description": job_description,
-            }
-        )
+        if not job_description.strip():
+            st.error("Paste a target role or job description first.")
+            return
+        with st.spinner("Mapping skill gaps and learning plan..."):
+            result = run_career_graph(
+                {
+                    "intent": "skill_gap",
+                    "profile": profile,
+                    "job_description": job_description,
+                }
+            )
         if result["missing_skills"]:
             render_section_header("Missing Skills", "Prioritize the highest-signal skills first.")
             render_skill_chips(result["missing_skills"], "yellow")

@@ -3,8 +3,8 @@ from __future__ import annotations
 from backend.database import execute, fetch_all, fetch_one
 
 
-def upsert_profile(data: dict) -> int:
-    existing = fetch_one("SELECT id FROM users ORDER BY id DESC LIMIT 1")
+def upsert_profile(data: dict, user_id: int | None = None) -> int:
+    existing = fetch_one("SELECT id FROM users WHERE id=?", (user_id,)) if user_id else fetch_one("SELECT id FROM users ORDER BY id DESC LIMIT 1")
     params = (
         data.get("name", "CareerOS User"),
         data.get("school", ""),
@@ -28,14 +28,16 @@ def upsert_profile(data: dict) -> int:
         return int(existing["id"])
     return execute(
         """
-        INSERT INTO users (name, school, major, graduation_year, target_roles, skills, experience, projects, career_goal)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (username, password_hash, name, school, major, graduation_year, target_roles, skills, experience, projects, career_goal)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        params,
+        (data.get("username", ""), data.get("password_hash", ""), *params),
     )
 
 
-def get_current_profile() -> dict | None:
+def get_current_profile(user_id: int | None = None) -> dict | None:
+    if user_id:
+        return fetch_one("SELECT * FROM users WHERE id=?", (user_id,))
     return fetch_one("SELECT * FROM users ORDER BY id DESC LIMIT 1")
 
 

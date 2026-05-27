@@ -1,6 +1,9 @@
 [client]
 showSidebarNavigation = false
 
+[server]
+maxUploadSize = 200
+
 [theme]
 base = "dark"
 primaryColor = "#3B82F6"

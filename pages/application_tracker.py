@@ -30,6 +30,9 @@ def render() -> None:
         submitted = st.form_submit_button("Add Application")
 
     if submitted:
+        if not company.strip() or not role.strip():
+            st.error("Company and role are required.")
+            return
         add_application(
             profile["id"],
             {
@@ -43,6 +46,7 @@ def render() -> None:
                 "notes": notes,
             },
         )
+        st.toast("Application added.", icon="✅")
         st.success("Application added.")
         st.rerun()
 
@@ -74,6 +78,9 @@ def render() -> None:
                 e_notes = st.text_area("Edit notes", value=selected["notes"], height=96)
             update_clicked = st.form_submit_button("Update Application")
         if update_clicked:
+            if not e_company.strip() or not e_role.strip():
+                st.error("Company and role are required.")
+                return
             update_application(
                 selected_id,
                 {
@@ -87,11 +94,13 @@ def render() -> None:
                     "notes": e_notes,
                 },
             )
+            st.toast("Application updated.", icon="✅")
             st.success("Application updated.")
             st.rerun()
-        if st.button("Delete Selected Application"):
+        confirm_delete = st.checkbox("Confirm deleting selected application")
+        if st.button("Delete Selected Application", disabled=not confirm_delete):
             delete_application(selected_id)
-            st.warning("Application deleted.")
+            st.toast("Application deleted.", icon="✅")
             st.rerun()
     else:
         st.info("No applications yet. Add your first opportunity above.")

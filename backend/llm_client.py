@@ -14,19 +14,35 @@ except ModuleNotFoundError:
 class LLMClient:
     def __init__(self) -> None:
         self.provider = os.getenv("LLM_PROVIDER", "openai").lower()
+        self.anthropic_key = os.getenv("ANTHROPIC_API_KEY")
         self.openai_key = os.getenv("OPENAI_API_KEY")
         self.gemini_key = os.getenv("GEMINI_API_KEY")
 
     @property
     def has_real_llm(self) -> bool:
-        return bool(self.openai_key or self.gemini_key)
+        return bool(self.anthropic_key or self.openai_key or self.gemini_key)
 
     def generate(self, task: str, context: dict[str, Any]) -> str:
+        if self.anthropic_key:
+            return self._anthropic_generate(task, context)
         if self.openai_key and self.provider == "openai":
             return self._openai_generate(task, context)
         if self.gemini_key and self.provider == "gemini":
             return self._gemini_generate(task, context)
         return self._mock_generate(task, context)
+
+    def _anthropic_generate(self, task: str, context: dict[str, Any]) -> str:
+        from anthropic import Anthropic
+
+        client = Anthropic(api_key=self.anthropic_key)
+        response = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=1600,
+            temperature=0.35,
+            system="You are CareerOS AI, a practical career coach. Be specific, concise, and honest. Do not invent experience.",
+            messages=[{"role": "user", "content": f"Task: {task}\n\nContext:\n{context}"}],
+        )
+        return "\n".join(block.text for block in response.content if getattr(block, "type", "") == "text")
 
     def _openai_generate(self, task: str, context: dict[str, Any]) -> str:
         from openai import OpenAI

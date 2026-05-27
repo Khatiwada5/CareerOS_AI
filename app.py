@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 
+from backend.auth import authenticate_user, create_user
 from backend.database import init_db
 from pages import (
     application_tracker,
@@ -9,6 +10,7 @@ from pages import (
     home,
     interview_prep,
     job_fit_scorer,
+    profile,
     resume_vault,
     resume_analyzer,
     resume_tailor,
@@ -21,6 +23,7 @@ init_db()
 
 PAGES = {
     "Home Dashboard": home.render,
+    "Profile": profile.render,
     "Resume Vault": resume_vault.render,
     "Resume Analyzer": resume_analyzer.render,
     "Job Fit Scorer": job_fit_scorer.render,
@@ -37,11 +40,11 @@ def inject_styles() -> None:
         """
         <style>
         :root {
-          --bg: #0B1020;
-          --card: #111827;
-          --card-2: #1F2937;
-          --blue: #3B82F6;
-          --purple: #8B5CF6;
+          --bg: #0a0f0d;
+          --card: #111a15;
+          --card-2: #1b4332;
+          --blue: #2d6a4f;
+          --purple: #1b4332;
           --green: #22C55E;
           --yellow: #FACC15;
           --red: #EF4444;
@@ -52,7 +55,7 @@ def inject_styles() -> None:
         .stApp {
           background:
             radial-gradient(circle at top left, rgba(59, 130, 246, .22), transparent 28rem),
-            radial-gradient(circle at top right, rgba(139, 92, 246, .18), transparent 26rem),
+            radial-gradient(circle at top right, rgba(45, 106, 79, .26), transparent 26rem),
             var(--bg);
           color: var(--text);
         }
@@ -65,11 +68,11 @@ def inject_styles() -> None:
           border-radius: 22px;
           padding: 30px;
           margin-bottom: 24px;
-          background: linear-gradient(135deg, rgba(59, 130, 246, .28), rgba(139, 92, 246, .22) 50%, rgba(17, 24, 39, .92));
+          background: linear-gradient(135deg, rgba(45, 106, 79, .38), rgba(27, 67, 50, .32) 50%, rgba(17, 26, 21, .95));
           box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
         }
         .page-hero .eyebrow {
-          color: #BFDBFE;
+          color: #B7E4C7;
           font-size: .78rem;
           text-transform: uppercase;
           font-weight: 800;
@@ -82,7 +85,7 @@ def inject_styles() -> None:
         .section-heading h2 { font-size: 1.15rem; margin-bottom: 2px; }
         .section-heading p { margin: 0; }
         .metric-card {
-          background: linear-gradient(180deg, rgba(31, 41, 55, .9), rgba(17, 24, 39, .95));
+          background: linear-gradient(180deg, rgba(31, 41, 55, .9), rgba(17, 26, 21, .95));
           border: 1px solid var(--line);
           border-radius: 18px;
           padding: 18px;
@@ -125,8 +128,8 @@ def inject_styles() -> None:
           margin: 4px 6px 4px 0;
           border: 1px solid transparent;
         }
-        .badge-blue, .chip-blue { background: rgba(59, 130, 246, .16); color: #BFDBFE; border-color: rgba(59, 130, 246, .35); }
-        .badge-purple, .chip-purple { background: rgba(139, 92, 246, .17); color: #DDD6FE; border-color: rgba(139, 92, 246, .38); }
+        .badge-blue, .chip-blue { background: rgba(45, 106, 79, .22); color: #B7E4C7; border-color: rgba(45, 106, 79, .48); }
+        .badge-purple, .chip-purple { background: rgba(27, 67, 50, .32); color: #D8F3DC; border-color: rgba(27, 67, 50, .58); }
         .badge-green, .chip-green { background: rgba(34, 197, 94, .14); color: #BBF7D0; border-color: rgba(34, 197, 94, .35); }
         .badge-yellow, .chip-yellow { background: rgba(250, 204, 21, .14); color: #FEF08A; border-color: rgba(250, 204, 21, .38); }
         .badge-red, .chip-red { background: rgba(239, 68, 68, .15); color: #FECACA; border-color: rgba(239, 68, 68, .38); }
@@ -146,7 +149,7 @@ def inject_styles() -> None:
         .warning-card strong { color: #FECACA; }
         .warning-card p { margin: 8px 0 0; color: #FCA5A5; }
         div[data-testid="stSidebar"] {
-          background: linear-gradient(180deg, #111827, #0B1020);
+          background: linear-gradient(180deg, #111a15, #0a0f0d);
           border-right: 1px solid var(--line);
         }
         div[data-testid="stSidebar"] h1, div[data-testid="stSidebar"] p, div[data-testid="stSidebar"] span, div[data-testid="stSidebar"] label {
@@ -170,7 +173,7 @@ def inject_styles() -> None:
           border-radius: 12px;
           border: 1px solid rgba(59, 130, 246, .45);
           font-weight: 600;
-          background: linear-gradient(135deg, var(--blue), var(--purple));
+          background: linear-gradient(135deg, #2d6a4f, #1b4332);
           color: white;
         }
         .stDataFrame {
@@ -186,9 +189,64 @@ def inject_styles() -> None:
 
 inject_styles()
 
+def render_auth_screen() -> None:
+    page_col, form_col = st.columns([1.05, .95])
+    with page_col:
+        st.markdown(
+            """
+            <div class="page-hero">
+              <div class="eyebrow">CareerOS AI</div>
+              <h1>Own your career pipeline.</h1>
+              <p>A private command center for resumes, job fit, interview prep, skill gaps, and applications.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with form_col:
+        tab_login, tab_signup = st.tabs(["Login", "Sign up"])
+        with tab_login:
+            with st.form("login_form"):
+                username = st.text_input("Username")
+                password = st.text_input("Password", type="password")
+                login = st.form_submit_button("Login")
+            if login:
+                user = authenticate_user(username, password)
+                if user:
+                    st.session_state["user_id"] = user["id"]
+                    st.session_state["username"] = user["username"] or user["name"]
+                    st.toast("Logged in.", icon="✅")
+                    st.rerun()
+                st.error("Invalid username or password.")
+        with tab_signup:
+            with st.form("signup_form"):
+                new_username = st.text_input("Choose username")
+                new_password = st.text_input("Choose password", type="password")
+                confirm_password = st.text_input("Confirm password", type="password")
+                signup = st.form_submit_button("Create Account")
+            if signup:
+                if new_password != confirm_password:
+                    st.error("Passwords do not match.")
+                    return
+                ok, message, user_id = create_user(new_username, new_password)
+                if ok and user_id:
+                    st.session_state["user_id"] = user_id
+                    st.session_state["username"] = new_username.strip().lower()
+                    st.toast("Account created.", icon="✅")
+                    st.rerun()
+                st.error(message)
+
+
+if not st.session_state.get("user_id"):
+    render_auth_screen()
+    st.stop()
+
 with st.sidebar:
     st.title("CareerOS AI")
-    st.caption("AI career command center")
+    username = st.session_state.get("username", "user")
+    st.markdown(f"### {username[:1].upper()}  `{username}`")
+    if st.button("Logout"):
+        st.session_state.clear()
+        st.rerun()
     selected_page = st.radio("Navigate", list(PAGES.keys()), label_visibility="collapsed")
     st.divider()
     st.caption("Profile -> Resume Vault -> analyze, tailor, prep, and track.")

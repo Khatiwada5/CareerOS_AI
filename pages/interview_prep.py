@@ -14,14 +14,18 @@ def render() -> None:
     role = st.text_input("Role")
     job_description = st.text_area("Role or job description", height=260)
     if st.button("Generate Interview Prep", type="primary"):
-        result = run_career_graph(
-            {
-                "intent": "interview_prep",
-                "profile": profile,
-                "role": role,
-                "job_description": job_description,
-            }
-        )
+        if not role.strip() and not job_description.strip():
+            st.error("Add a target role or job description first.")
+            return
+        with st.spinner("Building interview prep workspace..."):
+            result = run_career_graph(
+                {
+                    "intent": "interview_prep",
+                    "profile": profile,
+                    "role": role,
+                    "job_description": job_description,
+                }
+            )
         render_section_header("Interview Prep Workspace", "Practice by category instead of reading one long answer.")
         behavioral, technical, business, recruiter = st.tabs(["Behavioral", "Technical/Role", "Business", "Questions to Ask Recruiter"])
         with behavioral:

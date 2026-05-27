@@ -16,7 +16,9 @@ In Streamlit's **Advanced settings**, choose Python `3.11` or `3.12` for the mos
 ## Features
 
 - Home dashboard with profile setup, application counts, average fit score, recent analyses, and follow-up reminders
-- Resume Vault for saving an existing PDF, DOCX, or TXT resume
+- Login/signup with hashed passwords and per-user isolated data
+- Dedicated Profile page for school, major, skills, experience, projects, and career goals
+- Resume Vault for saving PDF, DOCX, or TXT resumes, setting an active resume, and removing old resumes
 - Resume Analyzer for PDF, DOCX, and TXT uploads
 - Job Fit Scorer using the requested 100-point scoring formula
 - Resume Tailor that improves bullets without inventing experience
@@ -27,7 +29,8 @@ In Streamlit's **Advanced settings**, choose Python `3.11` or `3.12` for the mos
 - LangGraph workflow with router and specialist agents
 - SQLite persistence
 - Mock LLM responses when no API key is configured
-- Optional OpenAI or Gemini generation when API keys are present
+- Anthropic Claude generation when `ANTHROPIC_API_KEY` is present, with mock fallback when no API key is configured
+- Optional OpenAI or Gemini fallback support
 - Lightweight FastAPI backend endpoints
 
 ## Tech Stack
@@ -38,7 +41,8 @@ In Streamlit's **Advanced settings**, choose Python `3.11` or `3.12` for the mos
 - LangGraph
 - SQLite
 - Pandas
-- OpenAI API or Gemini API
+- Anthropic Claude API
+- OpenAI API or Gemini API fallback
 - PDF/DOCX resume extraction
 
 ## Project Structure
@@ -86,7 +90,8 @@ uvicorn backend.api:app --reload
 ```text
 OPENAI_API_KEY=
 GEMINI_API_KEY=
-LLM_PROVIDER=openai
+ANTHROPIC_API_KEY=
+LLM_PROVIDER=anthropic
 DATABASE_PATH=data/careeros.db
 ```
 

@@ -39,6 +39,8 @@ def init_db() -> None:
             """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password_hash TEXT,
                 name TEXT NOT NULL,
                 school TEXT,
                 major TEXT,
@@ -56,6 +58,7 @@ def init_db() -> None:
                 file_name TEXT,
                 extracted_text TEXT,
                 resume_score INTEGER,
+                is_active INTEGER DEFAULT 0,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(id)
             );
@@ -89,6 +92,10 @@ def init_db() -> None:
             );
             """
         )
+        _ensure_column(conn, "users", "username", "TEXT")
+        _ensure_column(conn, "users", "password_hash", "TEXT")
+        _ensure_column(conn, "resumes", "is_active", "INTEGER DEFAULT 0")
+        conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username)")
 
 
 def fetch_all(query: str, params: Iterable[Any] = ()) -> list[dict[str, Any]]:
@@ -115,3 +122,33 @@ def clear_all_data() -> None:
         conn.execute("DELETE FROM applications")
         conn.execute("DELETE FROM resumes")
         conn.execute("DELETE FROM users")
+
+
+def clear_user_workspace(user_id: int, clear_profile: bool = False) -> None:
+    with get_connection() as conn:
+        conn.execute("DELETE FROM job_analysis WHERE user_id=?", (user_id,))
+        conn.execute("DELETE FROM applications WHERE user_id=?", (user_id,))
+        conn.execute("DELETE FROM resumes WHERE user_id=?", (user_id,))
+        if clear_profile:
+            conn.execute(
+                """
+                UPDATE users
+                SET name='', school='', major='', graduation_year='', target_roles='', skills='', experience='', projects='', career_goal=''
+                WHERE id=?
+                """,
+                (user_id,),
+            )
+
+
+def delete_user_account(user_id: int) -> None:
+    with get_connection() as conn:
+        conn.execute("DELETE FROM job_analysis WHERE user_id=?", (user_id,))
+        conn.execute("DELETE FROM applications WHERE user_id=?", (user_id,))
+        conn.execute("DELETE FROM resumes WHERE user_id=?", (user_id,))
+        conn.execute("DELETE FROM users WHERE id=?", (user_id,))
+
+
+def _ensure_column(conn: sqlite3.Connection, table: str, column: str, definition: str) -> None:
+    columns = [row["name"] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()]
+    if column not in columns:
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")

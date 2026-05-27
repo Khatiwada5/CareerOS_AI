@@ -2,16 +2,14 @@ from __future__ import annotations
 
 import streamlit as st
 
-from agents.profile_agent import get_current_profile, upsert_profile
-from agents.resume_agent import get_latest_resume
+from agents.profile_agent import get_current_profile
+from agents.resume_agent import get_active_resume
 from agents.tracker_agent import list_applications
-from backend.database import clear_all_data, fetch_all
+from backend.database import clear_user_workspace, fetch_all
 from pages.common import (
     dataframe_or_empty,
-    render_badge,
     render_card,
     render_kpi_card,
-    render_score_bar,
     render_section_header,
     page_title,
 )
@@ -23,10 +21,14 @@ def render() -> None:
         "Your AI-powered career command center for resumes, job fit, interviews, skill gaps, and applications.",
     )
 
-    profile = get_current_profile()
+    user_id = st.session_state.get("user_id")
+    profile = get_current_profile(user_id)
     applications = list_applications(profile["id"]) if profile else []
-    latest_resume = get_latest_resume(profile["id"]) if profile else None
-    analyses = fetch_all("SELECT company, role, fit_score, recommendation, created_at FROM job_analysis ORDER BY created_at DESC LIMIT 5")
+    latest_resume = get_active_resume(profile["id"]) if profile else None
+    analyses = fetch_all(
+        "SELECT company, role, fit_score, recommendation, created_at FROM job_analysis WHERE user_id=? ORDER BY created_at DESC LIMIT 5",
+        (profile["id"],),
+    ) if profile else []
     avg_score = round(sum(a["fit_score"] for a in analyses) / len(analyses), 1) if analyses else 0
     followups = [app for app in applications if app.get("follow_up_date")]
     resume_score = latest_resume.get("resume_score", 0) if latest_resume else 0
@@ -61,46 +63,12 @@ def render() -> None:
         render_card("No applications yet", "Add your first role in Application Tracker to activate the funnel and follow-up workflow.")
 
     with st.expander("Data Controls"):
-        st.caption("Use this when you want to restart the demo with a blank profile, no saved resumes, no job analyses, and no applications.")
+        st.caption("Use this when you want to restart your workspace with no saved resumes, job analyses, or applications.")
         confirm_clear = st.checkbox("I understand this will clear all saved app data")
-        if st.button("Clear Form and Saved Data", disabled=not confirm_clear):
-            clear_all_data()
-            st.success("All saved data cleared. The form is ready for a fresh start.")
+        if st.button("Clear Saved Data", disabled=not confirm_clear):
+            clear_user_workspace(profile["id"], clear_profile=False)
+            st.toast("Workspace data cleared.", icon="✅")
             st.rerun()
-
-    render_section_header("Profile Setup", "This profile powers resume analysis, job fit scoring, letters, interview prep, and skill plans.")
-    st.info("After saving your profile, go to Resume Vault to upload your PDF or DOCX resume once. The other tools will use your latest saved resume automatically.")
-    with st.form("profile_form"):
-        c1, c2 = st.columns(2)
-        with c1:
-            name = st.text_input("Name", value=(profile or {}).get("name", ""))
-            school = st.text_input("School", value=(profile or {}).get("school", ""))
-            major = st.text_input("Major", value=(profile or {}).get("major", ""))
-            graduation_year = st.text_input("Graduation year", value=(profile or {}).get("graduation_year", ""))
-        with c2:
-            target_roles = st.text_area("Target roles", value=(profile or {}).get("target_roles", ""), height=80)
-            skills = st.text_area("Skills", value=(profile or {}).get("skills", ""), height=80)
-        experience = st.text_area("Experience", value=(profile or {}).get("experience", ""), height=100)
-        projects = st.text_area("Projects", value=(profile or {}).get("projects", ""), height=100)
-        career_goal = st.text_area("Career goal", value=(profile or {}).get("career_goal", ""), height=80)
-        submitted = st.form_submit_button("Save Profile")
-
-    if submitted:
-        upsert_profile(
-            {
-                "name": name,
-                "school": school,
-                "major": major,
-                "graduation_year": graduation_year,
-                "target_roles": target_roles,
-                "skills": skills,
-                "experience": experience,
-                "projects": projects,
-                "career_goal": career_goal,
-            }
-        )
-        st.success("Profile saved.")
-        st.rerun()
 
     render_section_header("Recent Activity", "Recent job analyses and follow-up reminders.")
     dataframe_or_empty(analyses, "No job analyses yet. Use Job Fit Scorer to create one.")

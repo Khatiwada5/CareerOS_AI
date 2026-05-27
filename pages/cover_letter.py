@@ -21,15 +21,19 @@ def render() -> None:
     with c2:
         render_section_header("Cover Letter Preview", "Short, targeted, and easy to copy into an application.")
         if generate:
-            result = run_career_graph(
-                {
-                    "intent": "cover_letter",
-                    "profile": profile,
-                    "company": company,
-                    "role": role,
-                    "job_description": job_description,
-                }
-            )
+            if not company.strip() or not role.strip() or not job_description.strip():
+                st.error("Company, role, and job description are required.")
+                return
+            with st.spinner("Drafting a targeted cover letter..."):
+                result = run_career_graph(
+                    {
+                        "intent": "cover_letter",
+                        "profile": profile,
+                        "company": company,
+                        "role": role,
+                        "job_description": job_description,
+                    }
+                )
             render_card(f"{role or 'Role'} at {company or 'Company'}", result, "purple")
         else:
             render_card("Preview", "Your generated cover letter will appear here after you add a company, role, and job description.", "blue")
